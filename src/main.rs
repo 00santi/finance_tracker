@@ -7,9 +7,16 @@ use actix_web::
     HttpServer,
     Responder
 };
+use sqlx;
+mod db;
+type DynError = Box<dyn std::error::Error + Send + Sync>;
 
 #[actix_web::main]
-async fn main() -> std::io::Result<()> {
+async fn main() -> Result<(), DynError> {
+    let pool = db::init_db_pool().await?;
+    sqlx::query("SELECT 1").execute(&pool).await?;
+
+    return Ok(());
     HttpServer::new(|| {
         App::new()
             .service(health)
@@ -17,7 +24,9 @@ async fn main() -> std::io::Result<()> {
     })
         .bind(("127.0.0.1", 7878))?
         .run()
-        .await
+        .await?;
+
+    Ok(())
 }
 
 #[get("/health")]
