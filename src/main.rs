@@ -1,5 +1,8 @@
 use actix_web::{App, HttpResponse, HttpServer, Responder, get, post};
 use sqlx;
+use sqlx::PgPool;
+use sqlx::types::BigDecimal;
+use num_traits::cast::FromPrimitive;
 mod db;
 use db::{User, clear_tables, init_db_pool};
 type DynError = Box<dyn std::error::Error + Send + Sync>;
@@ -10,6 +13,21 @@ async fn main() -> Result<(), DynError> {
     let pool = &db_pool;
     clear_tables(pool).await?;
 
+    test_insert_user(pool).await;
+    test_insert_trans(pool).await;
+
+
+    Ok(())
+
+    /*HttpServer::new(|| App::new().service(health).service(echo))
+        .bind(("127.0.0.1", 7878))?
+        .run()
+        .await?;
+
+    Ok(())*/
+}
+
+async fn test_insert_user(pool: &PgPool) {
     let email = "test@test.com".to_string();
     let password_hash = "123".to_string();
 
@@ -20,7 +38,7 @@ async fn main() -> Result<(), DynError> {
         "#,
         email,
         password_hash
-    ).execute(pool).await?;
+    ).execute(pool).await.unwrap();
 
     let row = sqlx::query!(
         r#"
@@ -29,21 +47,40 @@ async fn main() -> Result<(), DynError> {
             WHERE email = $1
         "#,
         email
-    ).fetch_one(pool).await?;
+    ).fetch_one(pool).await.unwrap();
 
     println!(
         "User id: {}, name: {:?}, email: {}, created_at: {:?}",
         row.id, row.name, row.email, row.created_at
     );
+}
 
-    Ok(())
+async fn test_insert_trans(pool: &PgPool) {
+    let user_id = 1;
+    let amount = BigDecimal::from_f64(12.34).unwrap();
+    let category = "mmhmm";
 
-    /*HttpServer::new(|| App::new().service(health).service(echo))
-        .bind(("127.0.0.1", 7878))?
-        .run()
-        .await?;
+    sqlx::query!(
+        r#"
+        INSERT INTO transactions (user_id, amount, category)
+        VALUES ($1, $2, $3)
+        "#,
+        user_id,
+        amount,
+        category,
+    ).execute(pool).await.unwrap();
 
-    Ok(())*/
+    let row = sqlx::query!(
+        r#"
+            SELECT id, user_id, amount, category, description, created_at
+            FROM transactions
+            WHERE user_id = $1
+        "#,
+        user_id
+    ).fetch_one(pool).await.unwrap();
+
+    println!("Transaction id: {:?}, User id: {:?}, amount: {:?}, category: {:?}, description: {:?},  created at: {:?}",
+             row.id, row.user_id, row.amount, row.category, row.description, row.created_at);
 }
 
 #[get("/health")]

@@ -8,9 +8,10 @@ actix-web = "4"
 tokio = { version = "1", features = ["full"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
-sqlx = { version = "0.8", features = ["postgres", "runtime-tokio-rustls", "chrono"] }
+sqlx = { version = "0.8", features = ["postgres", "runtime-tokio-rustls", "chrono", "bigdecimal"] }
 argon2 = "0.5"
 jsonwebtoken = "10.3"
 dotenvy = "0.15"
 tracing = "0.1"
 chrono = "0.4"
+num-traits = "0.2.19"
