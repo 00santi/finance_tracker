@@ -22,7 +22,7 @@ pub struct User {
     pub name: Option<String>,
     pub email: String,
     pub password_hash: String,
-    pub creation_date: String,
+    pub created_at: String,
 }
 
 impl User {
@@ -32,7 +32,7 @@ impl User {
             name: None,
             email: String::new(),
             password_hash: String::new(),
-            creation_date: String::new(),
+            created_at: String::new(),
         }
     }
 }
