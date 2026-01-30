@@ -6,7 +6,7 @@ use sqlx;
 use sqlx::PgPool;
 use sqlx::types::BigDecimal;
 use num_traits::cast::FromPrimitive;
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 mod db;
 use db::{clear_tables, init_db_pool};
@@ -42,17 +42,31 @@ async fn echo(req_body: String) -> impl Responder {
 
 #[post("/users")]
 async fn create_user(pool: web::Data<PgPool>, req: web::Json<NewUserRequest>) -> impl Responder {
-    sqlx::query!(
+    let query_result = sqlx::query!(
         r#"
         INSERT INTO users (name, email, password_hash)
         VALUES ($1, $2, $3)
+        RETURNING name, email, created_at
         "#,
         req.username,
         req.email,
         make_hash(req.password.as_bytes()),
-    ).execute(pool.as_ref()).await.unwrap();
+    ).fetch_one(pool.as_ref()).await;
 
-    HttpResponse::Ok().body("User added successfully")
+    if let Err(e) = query_result {
+        if let sqlx::Error::Database(database_error) = e && database_error.is_unique_violation() {
+            return HttpResponse::Conflict().body("Email already exists");
+        }
+        return HttpResponse::InternalServerError().body("Error adding user to database");
+    }
+
+    let row = query_result.unwrap();
+    let response = UserCreatedResponse {
+        name: row.name.unwrap_or_default(),
+        email: row.email,
+        timestamp: row.created_at.expect("expected psql-generated timestamp to be non-null"),
+    };
+    HttpResponse::Created().json(response)
 }
 
 fn make_hash(pwd: &[u8]) -> String {
@@ -65,4 +79,11 @@ struct NewUserRequest {
     username: Option<String>,
     email: String,
     password: String,
+}
+
+#[derive(Serialize)]
+struct UserCreatedResponse {
+    name: String,
+    email: String,
+    timestamp: chrono::NaiveDateTime,
 }
