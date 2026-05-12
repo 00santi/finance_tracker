@@ -1,7 +1,5 @@
 use dotenvy::dotenv;
 use std::env;
-//use argon2::PasswordHash;
-//use serde::Serialize;
 use sqlx::PgPool;
 
 pub async fn init_db_pool() -> Result<PgPool, super::DynError> {
