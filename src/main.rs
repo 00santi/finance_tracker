@@ -44,3 +44,11 @@ async fn health() -> impl Responder {
 async fn echo(req_body: String) -> impl Responder {
     HttpResponse::Ok().body(req_body)
 }
+
+fn valid_email(email: &str) -> bool {
+    !(6..=255).contains(&email.len())
+}
+
+fn valid_pwd(pwd: &str) -> bool {
+    !(6..=255).contains(&pwd.len())
+}
