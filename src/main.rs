@@ -12,6 +12,7 @@ mod db;
 mod create_user;
 mod login;
 mod transaction;
+mod auth;
 
 type DynError = Box<dyn std::error::Error + Send + Sync>;
 

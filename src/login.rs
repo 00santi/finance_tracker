@@ -23,17 +23,18 @@ use jsonwebtoken::{
     Header
 };
 use crate::{valid_email, valid_pwd};
+use crate::auth::Claims;
 
 const EXPIRATION_TIME: i64 = 604800;
 
 #[post("/login")]
 pub async fn login(pool: web::Data<PgPool>, req: web::Json<LoginRequest>) -> impl Responder {
     let error401 = HttpResponse::Unauthorized().body("Email doesn't exist, or password is incorrect");
-    
+
     if !valid_email(&req.email) || !valid_pwd(&req.password) {
         return error401;
     }
-    
+
     if  !(6..=255).contains(&req.email.len()) ||
         !(8..=64).contains(&req.password.len()) {
         return error401;
@@ -87,13 +88,7 @@ struct LoginRequest {
     password: String,
 }
 
-#[derive(Serialize, Deserialize)]
-struct Claims {
-    sub: i32,
-    exp: i64,
-}
-
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize)]
 struct LoginResponse {
     access_token: String,
     token_type: String,

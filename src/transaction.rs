@@ -1,49 +1,50 @@
-use actix_web::{
-    HttpResponse,
-    Responder,
-    post,
-    web
-};
-use actix_web::error::HttpError;
-use argon2::password_hash::PasswordVerifier;
-
-use argon2::{
-    Argon2,
-    PasswordHash,
-};
+use crate::auth::extract_claims;
+use actix_web::{HttpResponse, Responder, post, web, HttpRequest};
 use sqlx;
 use sqlx::PgPool;
-use serde::{
-    Deserialize,
-    Serialize
-};
+use serde::Deserialize;
 
-use jsonwebtoken::{encode, EncodingKey, Header};
 use sqlx::types::BigDecimal;
 
 const VALID_CATEGORIES: [&str; 6] = ["PERSONAL", "BUSINESS", "PAYCHECK", "TRAVEL", "RENT", "GROCERIES"];
 
-#[post("/transaction")]
-pub async fn transaction(pool: web::Data<PgPool>, req: web::Json<TransRequest>) -> impl Responder {
-    // validate request
-    // validate token
-    // use token to determine user_id
-    let user_id = 0;
+fn valid_req(req: &web::Json<TransRequest>) -> bool {
+    if req.category.len() > 50 {
+        return false;
+    }
 
-    let category = req.category.trim().to_uppercase();
+    if let Some(desc) = &req.description && desc.len() > 50 {
+        return false;
+    }
+
+    true
+}
+
+#[post("/transactions")]
+pub async fn transaction(pool: web::Data<PgPool>, request_body: web::Json<TransRequest>, http_request: HttpRequest) -> impl Responder {
+    if !valid_req(&request_body) {
+        return HttpResponse::BadRequest().body("Invalid request");
+    }
+
+    let claims = match extract_claims(http_request) {
+        Ok(c) => c,
+        Err(e) => return e,
+    };
+
+    let category = request_body.category.trim().to_uppercase();
     if !VALID_CATEGORIES.contains(&category.as_str()) {
         return HttpResponse::BadRequest().body("Invalid category")
     };
 
-    let amount = match BigDecimal::try_from(req.amount) {
+    let amount = match BigDecimal::try_from(request_body.amount) {
         Ok(a) => a,
         _ => return HttpResponse::BadRequest().body("Invalid amount"),
     };
 
     if sqlx::query!(
         "INSERT INTO transactions (user_id, amount, category, description) VALUES ($1, $2, $3, $4)",
-        user_id, amount, req.category, req.description,
-    ).fetch_one(pool.as_ref()).await
+        claims.sub, amount, category, request_body.description,
+    ).execute(pool.as_ref()).await
         .is_err() {
         return HttpResponse::BadRequest().body("Invalid transaction")
     }
@@ -56,9 +57,4 @@ struct TransRequest {
     amount: f64,
     category: String,
     description: Option<String>,
-}
-
-#[derive(Serialize, Deserialize)]
-struct TransResponse {
-
 }
