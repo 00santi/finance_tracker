@@ -25,7 +25,7 @@ use crate::auth::Claims;
 const EXPIRATION_TIME: i64 = 604800;
 
 #[post("/login")]
-pub async fn login(state: web::Data<AppState>, req: web::Json<LoginRequest>) -> impl Responder {
+pub async fn post(state: web::Data<AppState>, req: web::Json<LoginRequest>) -> impl Responder {
     let error401 = HttpResponse::Unauthorized().body("Email doesn't exist, or password is incorrect");
 
     if !valid_email(&req.email) || !valid_pwd(&req.password) {

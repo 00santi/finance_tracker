@@ -28,9 +28,10 @@ async fn main() -> Result<(), DynError> {
             .app_data(app_data.clone())
             .service(health)
             .service(echo)
-            .service(create_user::create_user)
-            .service(login::login)
-            .service(transactions::transactions))
+            .service(create_user::post)
+            .service(login::post)
+            .service(transactions::post)
+            .service(transactions::get))
             .bind(("127.0.0.1", 7878))?
             .run()
             .await?;

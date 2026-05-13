@@ -18,7 +18,7 @@ pub use sqlx;
 use crate::{valid_email, valid_pwd, AppState};
 
 #[post("/users")]
-async fn create_user(state: web::Data<AppState>, req: web::Json<NewUserRequest>) -> impl Responder {
+async fn post(state: web::Data<AppState>, req: web::Json<NewUserRequest>) -> impl Responder {
 
     if !valid_email(&req.email) || !valid_pwd(&req.password) {
         return HttpResponse::BadRequest().body("Invalid request");
