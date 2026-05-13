@@ -4,24 +4,29 @@ use actix_web::{
     post,
     web
 };
-use argon2::password_hash::PasswordVerifier;
-
 use argon2::{
+    password_hash::PasswordVerifier,
     Argon2,
     PasswordHash,
 };
-use sqlx;
-use sqlx::PgPool;
+use sqlx::{
+    self,
+    PgPool,
+};
 use serde::{
     Deserialize,
     Serialize
+};
+use jsonwebtoken::{
+    encode, 
+    EncodingKey, 
+    Header
 };
 
 const EXPIRATION_TIME: i64 = 604800;
 
 #[post("/login")]
 pub async fn login(pool: web::Data<PgPool>, req: web::Json<LoginRequest>) -> impl Responder {
-    use jsonwebtoken::{encode, EncodingKey, Header};
     let error401 = HttpResponse::Unauthorized().body("Email doesn't exist, or password is incorrect");
 
     let query_result = sqlx::query!(

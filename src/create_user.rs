@@ -4,13 +4,20 @@ use actix_web::{
     HttpResponse,
     Responder
 };
-use argon2::Argon2;
-use argon2::password_hash::rand_core::OsRng;
-use argon2::password_hash::SaltString;
-use serde::{Deserialize, Serialize};
-use argon2::PasswordHasher;
-use sqlx;
-use sqlx::PgPool;
+use argon2::{
+    Argon2,
+    PasswordHasher,
+    password_hash::rand_core::OsRng,
+    password_hash::SaltString,
+};
+use serde::{
+    Deserialize,
+    Serialize
+};
+use sqlx::{
+    self,
+    PgPool
+};
 
 #[post("/users")]
 async fn create_user(pool: web::Data<PgPool>, req: web::Json<NewUserRequest>) -> impl Responder {

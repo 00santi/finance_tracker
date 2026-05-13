@@ -11,6 +11,7 @@ use actix_web::{
 mod db;
 mod create_user;
 mod login;
+mod transaction;
 
 type DynError = Box<dyn std::error::Error + Send + Sync>;
 
@@ -25,7 +26,8 @@ async fn main() -> Result<(), DynError> {
             .service(health)
             .service(echo)
             .service(create_user::create_user)
-            .service(login::login))
+            .service(login::login)
+            .service(transaction::transaction))
             .bind(("127.0.0.1", 7878))?
             .run()
             .await?;
