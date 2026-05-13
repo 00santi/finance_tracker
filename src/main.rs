@@ -7,11 +7,12 @@ use actix_web::{
     post,
     web
 };
+use sqlx::PgPool;
 
 mod db;
 mod create_user;
 mod login;
-mod transaction;
+mod transactions;
 mod auth;
 
 type DynError = Box<dyn std::error::Error + Send + Sync>;
@@ -19,7 +20,8 @@ type DynError = Box<dyn std::error::Error + Send + Sync>;
 #[actix_web::main]
 async fn main() -> Result<(), DynError> {
     let pool = db::init_db_pool().await?;
-    let app_data = web::Data::new(pool);
+    let jwt_secret = std::env::var("JWT_SECRET")?;
+    let app_data = web::Data::new(AppState { pool, jwt_secret });
 
     HttpServer::new(move ||
         App::new()
@@ -28,12 +30,17 @@ async fn main() -> Result<(), DynError> {
             .service(echo)
             .service(create_user::create_user)
             .service(login::login)
-            .service(transaction::transaction))
+            .service(transactions::transactions))
             .bind(("127.0.0.1", 7878))?
             .run()
             .await?;
 
     Ok(())
+}
+
+pub struct AppState {
+    pub pool: PgPool,
+    pub jwt_secret: String,
 }
 
 #[get("/health")]

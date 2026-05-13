@@ -9,10 +9,7 @@ use argon2::{
     Argon2,
     PasswordHash,
 };
-use sqlx::{
-    self,
-    PgPool,
-};
+use sqlx;
 use serde::{
     Deserialize,
     Serialize
@@ -22,13 +19,13 @@ use jsonwebtoken::{
     EncodingKey,
     Header
 };
-use crate::{valid_email, valid_pwd};
+use crate::{AppState, valid_email, valid_pwd};
 use crate::auth::Claims;
 
 const EXPIRATION_TIME: i64 = 604800;
 
 #[post("/login")]
-pub async fn login(pool: web::Data<PgPool>, req: web::Json<LoginRequest>) -> impl Responder {
+pub async fn login(state: web::Data<AppState>, req: web::Json<LoginRequest>) -> impl Responder {
     let error401 = HttpResponse::Unauthorized().body("Email doesn't exist, or password is incorrect");
 
     if !valid_email(&req.email) || !valid_pwd(&req.password) {
@@ -43,7 +40,7 @@ pub async fn login(pool: web::Data<PgPool>, req: web::Json<LoginRequest>) -> imp
     let query_result = sqlx::query!(
         "SELECT id, email, password_hash FROM users WHERE email = $1",
         req.email
-    ).fetch_one(pool.as_ref()).await;
+    ).fetch_one(&state.pool).await;
 
     let row = match query_result {
         Ok(query_result) => query_result,
@@ -68,7 +65,7 @@ pub async fn login(pool: web::Data<PgPool>, req: web::Json<LoginRequest>) -> imp
     let access_token = match encode(
         &Header::default(),
         &claims,
-        &EncodingKey::from_secret(std::env::var("JWT_SECRET").unwrap().as_ref()),
+        &EncodingKey::from_secret(state.jwt_secret.as_bytes()),
     ) {
         Ok(t) => t,
         _ => return error401

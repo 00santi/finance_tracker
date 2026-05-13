@@ -1,7 +1,7 @@
 use crate::auth::extract_claims;
+use crate::AppState;
 use actix_web::{HttpResponse, Responder, post, web, HttpRequest};
 use sqlx;
-use sqlx::PgPool;
 use serde::Deserialize;
 
 use sqlx::types::BigDecimal;
@@ -21,12 +21,12 @@ fn valid_req(req: &web::Json<TransRequest>) -> bool {
 }
 
 #[post("/transactions")]
-pub async fn transaction(pool: web::Data<PgPool>, request_body: web::Json<TransRequest>, http_request: HttpRequest) -> impl Responder {
+pub async fn transactions(state: web::Data<AppState>, request_body: web::Json<TransRequest>, http_request: HttpRequest) -> impl Responder {
     if !valid_req(&request_body) {
         return HttpResponse::BadRequest().body("Invalid request");
     }
 
-    let claims = match extract_claims(http_request) {
+    let claims = match extract_claims(http_request, state.jwt_secret.as_bytes()) {
         Ok(c) => c,
         Err(e) => return e,
     };
@@ -44,7 +44,7 @@ pub async fn transaction(pool: web::Data<PgPool>, request_body: web::Json<TransR
     if sqlx::query!(
         "INSERT INTO transactions (user_id, amount, category, description) VALUES ($1, $2, $3, $4)",
         claims.sub, amount, category, request_body.description,
-    ).execute(pool.as_ref()).await
+    ).execute(&state.pool).await
         .is_err() {
         return HttpResponse::BadRequest().body("Invalid transaction")
     }

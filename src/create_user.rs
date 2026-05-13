@@ -14,14 +14,11 @@ use serde::{
     Deserialize,
     Serialize
 };
-use sqlx::{
-    self,
-    PgPool
-};
-use crate::{valid_email, valid_pwd};
+pub use sqlx;
+use crate::{valid_email, valid_pwd, AppState};
 
 #[post("/users")]
-async fn create_user(pool: web::Data<PgPool>, req: web::Json<NewUserRequest>) -> impl Responder {
+async fn create_user(state: web::Data<AppState>, req: web::Json<NewUserRequest>) -> impl Responder {
 
     if !valid_email(&req.email) || !valid_pwd(&req.password) {
         return HttpResponse::BadRequest().body("Invalid request");
@@ -41,7 +38,7 @@ async fn create_user(pool: web::Data<PgPool>, req: web::Json<NewUserRequest>) ->
         req.username,
         req.email,
         pwd_hash,
-    ).fetch_one(pool.as_ref()).await;
+    ).fetch_one(&state.pool).await;
 
     let row = match query_result {
         Ok(query_result) => query_result,

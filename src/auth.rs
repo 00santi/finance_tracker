@@ -9,7 +9,7 @@ pub struct Claims {
     pub exp: i64,
 }
 
-pub fn extract_claims(req: HttpRequest) -> Result<Claims, HttpResponse> {
+pub fn extract_claims(req: HttpRequest, jwt_secret: &[u8]) -> Result<Claims, HttpResponse> {
     let token_error = Err(HttpResponse::Unauthorized().body("Invalid token"));
     
     let auth_token = match req.headers().get("Authorization") {
@@ -28,7 +28,7 @@ pub fn extract_claims(req: HttpRequest) -> Result<Claims, HttpResponse> {
 
     let decoded = decode::<Claims>(
         &auth_token[7..],
-        &DecodingKey::from_secret(std::env::var("JWT_SECRET").unwrap().as_ref()),
+        &DecodingKey::from_secret(jwt_secret),
         &Validation::default(),
     );
 
