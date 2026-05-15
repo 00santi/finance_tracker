@@ -10,7 +10,7 @@ serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 sqlx = { version = "0.8", features = ["postgres", "runtime-tokio-rustls", "chrono", "bigdecimal"] }
 argon2 = "0.5"
-jsonwebtoken = "10.3"
+jsonwebtoken = { version = "10", features = ["rust_crypto"] }
 dotenvy = "0.15"
 tracing = "0.1"
 chrono = {  version = "0.4", features = ["serde"] }

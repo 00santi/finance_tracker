@@ -1,4 +1,4 @@
-CREATE TABLE users
+CREATE TABLE IF NOT EXISTS users
 (
     id            SERIAL PRIMARY KEY,
     name          TEXT,
@@ -7,7 +7,7 @@ CREATE TABLE users
     created_at    TIMESTAMP NOT NULL DEFAULT now()
 );
 
-CREATE TABLE transactions
+CREATE TABLE IF NOT EXISTS transactions
 (
     id          SERIAL PRIMARY KEY,
     user_id     INTEGER REFERENCES users (id) ON DELETE CASCADE,

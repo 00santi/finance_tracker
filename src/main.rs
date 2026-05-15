@@ -32,7 +32,8 @@ async fn main() -> Result<(), DynError> {
             .service(create_user::post)
             .service(login::post)
             .service(transactions::post)
-            .service(transactions::get))
+            .service(transactions::get)
+            .service(balance::get))
             .bind(("127.0.0.1", 7878))?
             .run()
             .await?;
@@ -56,9 +57,9 @@ async fn echo(req_body: String) -> impl Responder {
 }
 
 fn valid_email(email: &str) -> bool {
-    !(6..=255).contains(&email.len())
+    (6..=255).contains(&email.len())
 }
 
 fn valid_pwd(pwd: &str) -> bool {
-    !(6..=255).contains(&pwd.len())
+    (6..=255).contains(&pwd.len())
 }

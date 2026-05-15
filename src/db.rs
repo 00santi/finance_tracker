@@ -6,6 +6,7 @@ pub async fn init_db_pool() -> Result<PgPool, super::DynError> {
     dotenv()?;
     let url = env::var("DATABASE_URL")?;
     let pool = PgPool::connect(url.as_str()).await?;
+    _clear_tables(&pool).await.expect("Error clearing tables");
     Ok(pool)
 }
 
