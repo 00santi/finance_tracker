@@ -14,6 +14,7 @@ mod create_user;
 mod login;
 mod transactions;
 mod auth;
+mod balance;
 
 type DynError = Box<dyn std::error::Error + Send + Sync>;
 
