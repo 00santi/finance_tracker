@@ -22,6 +22,8 @@ type DynError = Box<dyn std::error::Error + Send + Sync>;
 async fn main() -> Result<(), DynError> {
     let pool = db::init_db_pool().await?;
     let jwt_secret = std::env::var("JWT_SECRET")?;
+    let host = std::env::var("HOST").unwrap_or("127.0.0.1".to_string());
+    let port = std::env::var("PORT").unwrap_or("7878".to_string()).parse()?;
     let app_data = web::Data::new(AppState { pool, jwt_secret });
 
     HttpServer::new(move ||
@@ -34,7 +36,7 @@ async fn main() -> Result<(), DynError> {
             .service(transactions::post)
             .service(transactions::get)
             .service(balance::get))
-            .bind(("127.0.0.1", 7878))?
+            .bind((host, port))?
             .run()
             .await?;
 
