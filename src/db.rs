@@ -3,7 +3,7 @@ use std::env;
 use sqlx::PgPool;
 
 pub async fn init_db_pool() -> Result<PgPool, super::DynError> {
-    dotenv()?;
+    dotenv().ok();
     let url = env::var("DATABASE_URL")?;
     let pool = PgPool::connect(url.as_str()).await?;
     Ok(pool)
