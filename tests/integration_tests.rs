@@ -2,16 +2,39 @@ const USERS: &str = "http://127.0.0.1:7878/users";
 const LOGIN: &str = "http://127.0.0.1:7878/login";
 const TRANSACTIONS: &str = "http://127.0.0.1:7878/transactions";
 const BALANCE: &str = "http://127.0.0.1:7878/balance";
+const EMAIL: &str = "integration_test@test.com";
+const PASSWORD: &str = "integration_test1234";
+use sqlx::PgPool;
+
+async fn clean_test_data() {
+    dotenvy::dotenv().ok();
+
+    let database_url = std::env::var("DATABASE_URL")
+        .expect("DATABASE_URL not set");
+
+    let pool = PgPool::connect(&database_url)
+        .await
+        .expect("error connect to database");
+
+    sqlx::query!(
+          "DELETE FROM users WHERE email = $1",
+          EMAIL
+      )
+        .execute(&pool)
+        .await
+        .expect("failed to delete test user");
+}
 
 #[tokio::test]
 async fn full_flow_test() {
+    clean_test_data().await;
     let client = reqwest::Client::new();
 
     let user_test = client
         .post(USERS)
         .json(&serde_json::json!({
-            "email": "test@test.com",
-            "password": "test1234"
+            "email": EMAIL,
+            "password": PASSWORD,
         }))
         .send()
         .await
@@ -25,8 +48,8 @@ async fn full_flow_test() {
     let login_test = client
         .post(LOGIN)
         .json(&serde_json::json!({
-            "email": "test@test.com",
-            "password": "test1234"
+            "email": EMAIL,
+            "password": PASSWORD,
         }))
         .send()
         .await
@@ -100,4 +123,6 @@ async fn full_flow_test() {
     println!("Balance should be: {}", 101.01 + 350.99 - 91.30);
     println!("Balance results:\n{}\n{}", status, body);
     assert!(status.is_success());
+
+    clean_test_data().await;
 }
