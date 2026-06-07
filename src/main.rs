@@ -29,6 +29,7 @@ async fn main() -> Result<(), DynError> {
     HttpServer::new(move ||
         App::new()
             .app_data(app_data.clone())
+            .service(homepage)
             .service(health)
             .service(echo)
             .service(create_user::post)
@@ -51,6 +52,12 @@ pub struct AppState {
 #[get("/health")]
 async fn health() -> impl Responder {
     HttpResponse::Ok().body("Hello world!")
+}
+
+#[get("/")]
+async fn homepage() -> impl Responder {
+    HttpResponse::Ok()
+        .body("Finance Tracker :D check the GitHub README for usage https://github.com/00santi/finance_tracker")
 }
 
 #[post("/echo")]
