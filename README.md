@@ -253,3 +253,4 @@ curl http://127.0.0.1:7878/balance \
 - JWTs are used for protected routes.
 - Each user only sees their own transactions.
 - SQLx offline metadata is included so the Docker build does not need a database connection during compilation.
+- Frontend still in progress
