@@ -7,6 +7,7 @@ use actix_web::{
     post,
     web
 };
+use actix_cors::Cors;
 use sqlx::PgPool;
 
 mod db;
@@ -25,6 +26,7 @@ async fn main() -> Result<(), DynError> {
     let host = std::env::var("HOST").unwrap_or("127.0.0.1".to_string());
     let port = std::env::var("PORT").unwrap_or("7878".to_string()).parse()?;
     let app_data = web::Data::new(AppState { pool, jwt_secret });
+    let frontend_origin = "http://localhost:5173";
 
     HttpServer::new(move ||
         App::new()
@@ -36,7 +38,12 @@ async fn main() -> Result<(), DynError> {
             .service(login::post)
             .service(transactions::post)
             .service(transactions::get)
-            .service(balance::get))
+            .service(balance::get)
+            .wrap(Cors::default()
+                .allowed_origin(frontend_origin)
+                .allow_any_header()
+                .allow_any_method()
+            ))
             .bind((host, port))?
             .run()
             .await?;
