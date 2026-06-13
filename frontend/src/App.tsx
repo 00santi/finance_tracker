@@ -20,16 +20,24 @@ function App() {
         })
     };
 
-    const [inputText, setInputText] = useState('');
-    const [responseText, setResponseText] = useState('');
+    const [emailInput, setEmailInput] = useState('');
+    const [finalEmail, setFinalEmail] = useState('');
 
-    const handleInput = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setInputText(event.target.value);
-    }
+    const handleEmailInput = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setEmailInput(event.target.value);
+    };
 
-    const handleSubmit = () => {
-        setResponseText(inputText);
-        setInputText('');
+    const [passwordInput, setPasswordInput] = useState('');
+    const [finalPassword, setFinalPassword] = useState('');
+    const handlePasswordInput = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setPasswordInput(event.target.value);
+    };
+
+    const handleRegisterButton = () => {
+        setFinalEmail(emailInput);
+        setEmailInput('');
+        setFinalPassword(passwordInput);
+        setPasswordInput('');
     };
 
 
@@ -43,13 +51,18 @@ function App() {
                 <hr style={{margin: '20px 0'}}/>
 
                 <h2>User Input Example</h2>
-                <input type="text"
-                       value={inputText}
-                       onChange={handleInput}
+                <input type="email"
+                       value={emailInput}
+                       onChange={handleEmailInput}
                        placeholder="Enter email here"/>
-                <button onClick={handleSubmit}>Submit</button>
-                {responseText && (
-                    <p>You submitted: <strong>{responseText}</strong></p>)}
+                <input type="password"
+                       value={passwordInput}
+                       onChange={handlePasswordInput}
+                       placeholder="Enter password here"/>
+                <button onClick={handleRegisterButton}>Register</button>
+                {finalEmail && finalPassword && (
+                    <p>You submitted Email: <strong>{finalEmail}</strong>, Password = <strong>{finalPassword}</strong></p>
+                )}
             </header>
         </div>
     )
