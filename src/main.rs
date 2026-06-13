@@ -39,6 +39,7 @@ async fn main() -> Result<(), DynError> {
             .service(transactions::post)
             .service(transactions::get)
             .service(balance::get)
+            .service(clear_db)
             .wrap(Cors::default()
                 .allowed_origin(frontend_origin)
                 .allow_any_header()
