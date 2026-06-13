@@ -65,7 +65,7 @@ async fn health() -> impl Responder {
 #[get("/")]
 async fn homepage() -> impl Responder {
     HttpResponse::Ok()
-        .body("Finance Tracker :D check the GitHub README for usage https://github.com/00santi/finance_tracker")
+        .body("Finance Tracker :D check the GitHub README for usage https://github.com/00santi/finance_tracker\nFrontend is a work in progress")
 }
 
 #[post("/echo")]

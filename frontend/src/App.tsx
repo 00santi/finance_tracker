@@ -1,25 +1,9 @@
 import React, {useState} from 'react';
-import MessageDisplay from './MessageDisplay.tsx';
-
-//import './App.css';
+import { register } from './register.ts';
+import { login } from './login.ts';
+import { validateEmailAndPassword } from "./utils.ts";
 
 function App() {
-    const [message, setMessage] = useState('Welcome to the Finance Tracker App');
-
-    const [_, setClicks] = useState(0);
-
-    const handleCounterClick = () => {
-        setClicks(prev => {
-            const newClicks = prev + 1;
-            if (newClicks === 1)
-                setMessage('Button Clicked');
-            else
-                setMessage(`Button Clicked ${newClicks} times`);
-
-            return newClicks;
-        })
-    };
-
     const [emailInput, setEmailInput] = useState('');
     const [finalEmail, setFinalEmail] = useState('');
     const handleEmailInput = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -36,46 +20,47 @@ function App() {
     const [resultText, setResultText] = useState('');
 
     const handleRegisterButton = async () => {
-        setErrorText('');
+        if (!validateEmailAndPassword(emailInput, passwordInput, setErrorText))
+            return;
 
-        const regex = /\S+@\S+\.\S+/;
-        if (passwordInput.length < 6 || passwordInput.length > 255)
-            setErrorText('Password length must be between 6 and 255 characters');
-        else if (passwordInput.includes(' '))
-            setErrorText('Password may not contain any spaces');
-        else if (!regex.test(emailInput))
-            setErrorText('Invalid email');
-        else {
-            const result = await register(emailInput, passwordInput);
-            setResultText(result);
+        const result = await register(emailInput, passwordInput);
+        setResultText(result.message);
 
-            setFinalEmail(emailInput);
-            setEmailInput('');
-            setFinalPassword(passwordInput);
-            setPasswordInput('');
-        }
+        setFinalEmail(emailInput);
+        setEmailInput('');
+        setFinalPassword(passwordInput);
+        setPasswordInput('');
     };
 
+    const handleLoginButton = async () => {
+        if (!validateEmailAndPassword(emailInput, passwordInput, setErrorText))
+            return;
+
+        const result = await login(emailInput, passwordInput);
+        setResultText(result.message);
+        if (result.kind === "ok") {
+            localStorage.setItem("token", result.token);
+            console.log("Saved token:", localStorage.getItem("token"));
+        }
+        setEmailInput('');
+        setPasswordInput('');
+    };
 
     return (
         <div className="App">
             <header className="App-header">
                 <h1>Finance Tracker Frontend</h1>
-                <MessageDisplay message={message}></MessageDisplay>
-                <button onClick={handleCounterClick}>Change Message</button>
-
                 <hr style={{margin: '20px 0'}}/>
-
-                <h2>User Input Example</h2>
                 <input type="email"
                        value={emailInput}
                        onChange={handleEmailInput}
-                       placeholder="Enter email here"/>
+                       placeholder="Enter email here"/><br/>
                 <input type="password"
                        value={passwordInput}
                        onChange={handlePasswordInput}
-                       placeholder="Enter password here"/>
+                       placeholder="Enter password here"/><br/>
                 <button onClick={handleRegisterButton}>Register</button>
+                <button onClick={handleLoginButton}>Login</button>
                 {finalEmail && finalPassword && (
                     <p>You submitted Email: <strong>{finalEmail}</strong>, Password = <strong>{finalPassword}</strong></p>
                 )}
@@ -88,30 +73,6 @@ function App() {
             </header>
         </div>
     )
-}
-
-async function register(email: string, password: string): Promise<string> {
-    try {
-        const response = await fetch("http://localhost:7878/register", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                email: email,
-                password: password,
-            }),
-        });
-
-        const data = await response.json();
-
-        if (!response.ok)
-            return `Registration failed: ${data.message ?? 'Unknown error'}`;
-
-        return (`Success! ${data.message}`);
-    } catch (err) {
-        return `Network Error: ${JSON.stringify(err)}`;
-    }
 }
 
 export default App;
