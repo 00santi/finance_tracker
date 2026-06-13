@@ -1,6 +1,5 @@
 interface Ok {
     kind: "ok",
-    message: string,
     token: string,
 }
 
@@ -34,13 +33,12 @@ export async function login(email: string, password: string): Promise<LoginResul
         const data = await response.json();
         return {
             kind: "ok",
-            message: `Success! Token: ${data.access_token}`,
             token: data.access_token,
         };
     } catch (err) {
         return {
             kind: "err",
-            message: `Network Error: ${JSON.stringify(err)}`
+            message: `Network Error: ${err.message}`
         };
     }
 }

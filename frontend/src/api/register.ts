@@ -34,12 +34,12 @@ export async function register(email: string, password: string): Promise<Registe
 
         return {
             kind: "ok",
-            message: `Success! Token: ${data.access_token}`
+            message: `Registered successfully`
         };
     } catch (err) {
         return {
             kind: "err",
-            message: `Network Error: ${JSON.stringify(err)}`
+            message: `Network Error: ${err.message}`
         };
     }
 }
