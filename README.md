@@ -39,7 +39,7 @@ Returns a simple response showing that the server is running.
 ### Create User
 
 ```http
-POST /users
+POST /register
 ```
 
 Request body:

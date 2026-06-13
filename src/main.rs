@@ -10,7 +10,7 @@ use actix_web::{
 use sqlx::PgPool;
 
 mod db;
-mod create_user;
+mod register;
 mod login;
 mod transactions;
 mod auth;
@@ -32,7 +32,7 @@ async fn main() -> Result<(), DynError> {
             .service(homepage)
             .service(health)
             .service(echo)
-            .service(create_user::post)
+            .service(register::post)
             .service(login::post)
             .service(transactions::post)
             .service(transactions::get)
