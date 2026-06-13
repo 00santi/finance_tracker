@@ -46,8 +46,9 @@ function App() {
         else if (!regex.test(emailInput))
             setErrorText('Invalid email');
         else {
-            const result = await register(finalEmail, finalPassword);
+            const result = await register(emailInput, passwordInput);
             setResultText(result);
+
             setFinalEmail(emailInput);
             setEmailInput('');
             setFinalPassword(passwordInput);
@@ -105,11 +106,11 @@ async function register(email: string, password: string): Promise<string> {
         const data = await response.json();
 
         if (!response.ok)
-            return (`Registration failed: ${data}`);
+            return `Registration failed: ${data.message ?? 'Unknown error'}`;
 
-        return (`Success!`);
+        return (`Success! ${data.message}`);
     } catch (err) {
-        return `Network Error: ${err}`;
+        return `Network Error: ${JSON.stringify(err)}`;
     }
 }
 
