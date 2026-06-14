@@ -1,0 +1,121 @@
+/*
+    POST
+*/
+
+interface PostOk {
+    kind: "ok",
+}
+
+interface PostErr {
+    kind: "err",
+    message: string,
+}
+
+type PostResult = PostOk | PostErr;
+
+export async function postTransactions(token: string | null, amount: string, category: string, description: string | null): Promise<PostResult> {
+    if (!token)
+        token = localStorage.getItem("token");
+    if (!token) {
+        return {
+            kind: "err",
+            message: "invalid token",
+        };
+    }
+
+    const request = {
+        method: "POST",
+        headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            amount: amount,
+            category: category,
+            description: description,
+        })
+    };
+
+    try {
+        const response = await fetch("http://localhost:7878/transactions", request);
+
+        if (!response.ok) {
+            const errText = await response.text();
+            return {
+                kind: "err",
+                message: `Error saving transaction: ${errText}`
+            };
+        }
+
+        const data = await response.json();
+        return { kind: "ok" };
+    }
+    catch (err) {
+        return {
+            kind: "err",
+            message: `Network Error: ${err.message}`
+        };
+    }
+}
+
+/*
+    GET
+*/
+
+interface Transaction {
+    amount: string,
+    category: string,
+    description: string | null,
+    created_at: string,
+}
+
+interface GetOk {
+    kind: "ok",
+    transactions: Transaction[],
+}
+
+interface GetErr {
+    kind: "err",
+    message: string,
+}
+
+type GetResult = GetOk | GetErr;
+
+export async function getTransactions(token: string | null): Promise<GetResult> {
+    if (!token)
+        token = localStorage.getItem("token");
+    if (!token) {
+        return {
+            kind: "err",
+            message: "invalid token",
+        };
+    }
+
+    const request = {
+        method: "GET",
+        headers: {
+            "Authorization": `Bearer ${token}`,
+        },
+    };
+
+    try {
+        const response = await fetch("http://localhost:7878/transactions", request);
+
+        if (!response.ok) {
+            const errText = await response.text();
+            return {
+                kind: "err",
+                message: `Error fetching transactions: ${errText}`
+            };
+        }
+
+        const data = await response.json();
+        return { kind: "ok", transactions: data };
+    }
+    catch (err) {
+        return {
+            kind: "err",
+            message: `Network Error: ${err.message}`
+        };
+    }
+}
