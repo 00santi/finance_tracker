@@ -13,13 +13,11 @@ interface PostErr {
 
 type PostResult = PostOk | PostErr;
 
-export async function postTransactions(token: string | null, amount: string, category: string, description: string | null): Promise<PostResult> {
-    if (!token)
-        token = localStorage.getItem("token");
+export async function postTransactions(token: string, amount: string, category: string, description: string | null): Promise<PostResult> {
     if (!token) {
         return {
             kind: "err",
-            message: "invalid token",
+            message: "no token",
         };
     }
 
@@ -62,7 +60,7 @@ export async function postTransactions(token: string | null, amount: string, cat
     GET
 */
 
-interface Transaction {
+export interface Transaction {
     amount: string,
     category: string,
     description: string | null,
@@ -81,9 +79,7 @@ interface GetErr {
 
 type GetResult = GetOk | GetErr;
 
-export async function getTransactions(token: string | null): Promise<GetResult> {
-    if (!token)
-        token = localStorage.getItem("token");
+export async function getTransactions(token: string): Promise<GetResult> {
     if (!token) {
         return {
             kind: "err",

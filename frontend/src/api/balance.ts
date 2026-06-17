@@ -10,13 +10,11 @@ interface Err {
 
 type BalanceResult = Ok | Err;
 
-export async function balance(token: string | null): Promise<BalanceResult> {
-    if (!token)
-        token = localStorage.getItem("token");
+export async function balance(token: string): Promise<BalanceResult> {
     if (!token) {
         return {
             kind: "err",
-            message: "invalid token",
+            message: "no token",
         };
     }
 

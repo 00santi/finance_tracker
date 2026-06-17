@@ -19,7 +19,7 @@ use jsonwebtoken::{
     EncodingKey,
     Header
 };
-use crate::{AppState, valid_email, valid_pwd};
+use crate::AppState;
 use crate::auth::Claims;
 
 const EXPIRATION_TIME: i64 = 604800;
@@ -27,10 +27,6 @@ const EXPIRATION_TIME: i64 = 604800;
 #[post("/login")]
 pub async fn post(state: web::Data<AppState>, req: web::Json<LoginRequest>) -> impl Responder {
     let error401 = HttpResponse::Unauthorized().body("Email doesn't exist, or password is incorrect");
-
-    if !valid_email(&req.email) || !valid_pwd(&req.password) {
-        return error401;
-    }
 
     let query_result = sqlx::query!(
         "SELECT id, email, password_hash FROM users WHERE email = $1",

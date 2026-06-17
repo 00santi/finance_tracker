@@ -40,7 +40,6 @@ function App() {
             setResultText("Login successful!");
             setToken(result.token);
             localStorage.setItem("token", result.token);
-            console.log("Saved token:", localStorage.getItem("token"));
         } else {
             setResultText(result.message);
         }
@@ -50,11 +49,14 @@ function App() {
 
     const handleLogoutButton = async () => {
         setToken(null);
+        setErrorText("");
+        setResultText("");
         localStorage.removeItem("token");
     };
 
     if (token) {
-        return <Dashboard authToken={token} logoutHandler={handleLogoutButton} />;
+        return <Dashboard username={email}
+                          logoutHandler={handleLogoutButton} />;
     } else {
         return loginRegisterPage(email, handleEmailInput, password, handlePasswordInput, handleRegisterButton, handleLoginButton, errorText,  resultText);
     }
