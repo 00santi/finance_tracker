@@ -32,11 +32,6 @@ pub async fn post(state: web::Data<AppState>, req: web::Json<LoginRequest>) -> i
         return error401;
     }
 
-    if  !(6..=255).contains(&req.email.len()) ||
-        !(8..=64).contains(&req.password.len()) {
-        return error401;
-    }
-
     let query_result = sqlx::query!(
         "SELECT id, email, password_hash FROM users WHERE email = $1",
         req.email

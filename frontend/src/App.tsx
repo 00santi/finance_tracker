@@ -2,9 +2,10 @@ import React, {useState} from 'react';
 import { register } from './api/register.ts';
 import { login } from './api/login.ts';
 import { validateEmailAndPassword } from "./utils.ts";
+import Dashboard from "./Dashboard.tsx"
 
 function App() {
-    const [token, setToken] = useState<string | null>(null);
+    const [token, setToken] = useState<string | null>(() => { return localStorage.getItem("token"); });
 
     const [email, setEmail] = useState('');
     const handleEmailInput = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -47,19 +48,16 @@ function App() {
         setPassword('');
     };
 
+    const handleLogoutButton = async () => {
+        setToken(null);
+        localStorage.removeItem("token");
+    };
+
     if (token) {
-        return dashboardPage;
+        return <Dashboard authToken={token} logoutHandler={handleLogoutButton} />;
     } else {
         return loginRegisterPage(email, handleEmailInput, password, handlePasswordInput, handleRegisterButton, handleLoginButton, errorText,  resultText);
     }
-}
-
-function dashboardPage() {
-    return (
-        <div className="Dashboard">
-            <h1>Dashboard Page</h1>
-        </div>
-    )
 }
 
 function loginRegisterPage(email, emailHandler, password, passwordHandler, registerHandler, loginHandler, errorText, resultText) {

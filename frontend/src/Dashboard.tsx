@@ -5,7 +5,7 @@ interface DashboardProps {
     logoutHandler: () => void;
 }
 
-const Dashboard: React.FC<DashboardProps> = ({authToken, onLogout}) => {
+const Dashboard: React.FC<DashboardProps> = ({authToken, logoutHandler}) => {
     return (
         <div>
             <h2>Welcome to your Dashboard!</h2>
@@ -13,7 +13,7 @@ const Dashboard: React.FC<DashboardProps> = ({authToken, onLogout}) => {
             <button>Add New Transaction</button>
             <button>Get Transaction History</button>
             <button>Get Balance</button>
-            <button onClick={logoutHandler}>Logout (not implemented yet)</button>
+            <button onClick={logoutHandler}>Log out</button>
         </div>
     );
 };

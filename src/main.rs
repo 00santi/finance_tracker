@@ -91,5 +91,5 @@ fn valid_email(email: &str) -> bool {
 }
 
 fn valid_pwd(pwd: &str) -> bool {
-    (6..=255).contains(&pwd.len())
+    (6..=64).contains(&pwd.len())
 }
