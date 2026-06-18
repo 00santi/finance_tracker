@@ -247,10 +247,17 @@ curl http://127.0.0.1:7878/balance \
   -H "Authorization: Bearer YOUR_TOKEN_HERE"
 ```
 
+Check history:
+
+```bash
+curl http://127.0.0.1:7878/transactions \
+  -H "Authorization: Bearer YOUR_TOKEN_HERE"
+```
+
 ## Notes
 
 - Passwords are hashed with Argon2 before being stored.
 - JWTs are used for protected routes.
 - Each user only sees their own transactions.
 - SQLx offline metadata is included so the Docker build does not need a database connection during compilation.
-- Frontend still in progress
+- Frontend app in progress
