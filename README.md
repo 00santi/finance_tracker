@@ -218,7 +218,7 @@ http://127.0.0.1:7878/health
 Create a user:
 
 ```bash
-curl -X POST http://127.0.0.1:7878/users \
+curl -X POST http://127.0.0.1:7878/register \
   -H "Content-Type: application/json" \
   -d '{"email":"finance@example.com","password":"example123"}'
 ```

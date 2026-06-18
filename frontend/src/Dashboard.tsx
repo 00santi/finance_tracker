@@ -1,6 +1,6 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import {balance} from './api/balance.ts'
-import {getTransactions, postTransactions, Transaction} from './api/transactions.ts'
+import {getTransactions, postTransactions, type Transaction} from './api/transactions.ts'
 
 interface DashboardProps {
     username: string;
@@ -33,6 +33,7 @@ const Dashboard: React.FC<DashboardProps> = ({username, token, logoutHandler}) =
         } else {
             setError(null);
             setHistory(result.transactions);
+            if (history === []) setSuccess("No transaction history");
         }
     };
 

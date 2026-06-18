@@ -7,33 +7,28 @@ import Dashboard from "./Dashboard.tsx"
 function App() {
     const [token, setToken] = useState<string | null>(() => { return localStorage.getItem("token"); });
 
-    const [email, setEmail] = useState('');
-    const handleEmailInput = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setEmail(event.target.value);
-    };
-
-    const [password, setPassword] = useState('');
-    const handlePasswordInput = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setPassword(event.target.value);
-    };
-
-    const [errorText, setErrorText] = useState('');
-    const [resultText, setResultText] = useState('');
+    const [email, setEmail] = useState<string>('');
+    const [password, setPassword] = useState<string>('');
+    const [errorText, setErrorText] = useState<string>('');
+    const [resultText, setResultText] = useState<string>('');
 
     const handleRegisterButton = async () => {
-        if (!validateEmailAndPassword(email, password, setErrorText))
+        if (!validateEmailAndPassword(email, password, setErrorText)) {
+            setEmail("");
+            setPassword("");
             return;
+        }
 
         const result = await register(email, password);
         setResultText(result.message);
-
-        setEmail('');
-        setPassword('');
     };
 
     const handleLoginButton = async () => {
-        if (!validateEmailAndPassword(email, password, setErrorText))
+        if (!validateEmailAndPassword(email, password, setErrorText)) {
+            setEmail('');
+            setPassword('');
             return;
+        }
 
         const result = await login(email, password);
         if (result.kind === "ok") {
@@ -43,8 +38,6 @@ function App() {
         } else {
             setResultText(result.message);
         }
-        setEmail('');
-        setPassword('');
     };
 
     const handleLogoutButton = async () => {
@@ -56,13 +49,14 @@ function App() {
 
     if (token) {
         return <Dashboard username={email}
+                          token={token}
                           logoutHandler={handleLogoutButton} />;
     } else {
-        return loginRegisterPage(email, handleEmailInput, password, handlePasswordInput, handleRegisterButton, handleLoginButton, errorText,  resultText);
+        return loginRegisterPage(email, setEmail, password, setPassword, handleRegisterButton, handleLoginButton, errorText,  resultText);
     }
 }
 
-function loginRegisterPage(email, emailHandler, password, passwordHandler, registerHandler, loginHandler, errorText, resultText) {
+function loginRegisterPage(email, setEmail, password, setPassword, registerHandler, loginHandler, errorText, resultText) {
     return (
         <div className="App">
             <header className="App-header">
@@ -70,11 +64,11 @@ function loginRegisterPage(email, emailHandler, password, passwordHandler, regis
                 <hr style={{margin: '20px 0'}}/>
                 <input type="email"
                        value={email}
-                       onChange={emailHandler}
+                       onChange={(e) => setEmail(e.target.value)}
                        placeholder="Enter email here"/><br/>
                 <input type="password"
                        value={password}
-                       onChange={passwordHandler}
+                       onChange={(e) => setPassword(e.target.value)}
                        placeholder="Enter password here"/><br/>
                 <button onClick={registerHandler}>Register</button>
                 <button onClick={loginHandler}>Login</button>
