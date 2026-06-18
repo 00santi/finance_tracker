@@ -47,7 +47,13 @@ const Dashboard: React.FC<DashboardProps> = ({username, token, logoutHandler}) =
             setSuccess(null);
             return;
         }
-        const result = await postTransactions(token, transaction, category, description);
+        const parsed = Number(transaction);
+        if (isNaN(parsed)) {
+            setError("Please enter a numeric amount");
+            setSuccess(null);
+            return;
+        }
+        const result = await postTransactions(token, parsed, category, description);
         if (result.kind === "err") {
             setSuccess(null);
             setError(result.message);

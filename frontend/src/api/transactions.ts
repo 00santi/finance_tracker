@@ -13,7 +13,7 @@ interface PostErr {
 
 type PostResult = PostOk | PostErr;
 
-export async function postTransactions(token: string, amount: string, category: string, description: string | null): Promise<PostResult> {
+export async function postTransactions(token: string, amount: number, category: string, description: string | null): Promise<PostResult> {
     if (!token) {
         return {
             kind: "err",
@@ -44,8 +44,7 @@ export async function postTransactions(token: string, amount: string, category: 
                 message: `Error saving transaction: ${errText}`
             };
         }
-
-        const data = await response.json();
+        
         return { kind: "ok" };
     }
     catch (err) {
