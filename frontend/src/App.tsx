@@ -3,6 +3,7 @@ import { register } from './api/register.ts';
 import { login } from './api/login.ts';
 import { validateEmailAndPassword } from "./utils.ts";
 import Dashboard from "./Dashboard.tsx"
+import LoginRegisterPage from "./LoginRegisterPage.tsx"
 
 function App() {
     const [token, setToken] = useState<string | null>(() => { return localStorage.getItem("token"); });
@@ -51,36 +52,17 @@ function App() {
         return <Dashboard username={email}
                           token={token}
                           logoutHandler={handleLogoutButton} />;
-    } else {
-        return loginRegisterPage(email, setEmail, password, setPassword, handleRegisterButton, handleLoginButton, errorText,  resultText);
     }
-}
-
-function loginRegisterPage(email, setEmail, password, setPassword, registerHandler, loginHandler, errorText, resultText) {
-    return (
-        <div className="App">
-            <header className="App-header">
-                <h1>Finance Tracker Frontend</h1>
-                <hr style={{margin: '20px 0'}}/>
-                <input type="email"
-                       value={email}
-                       onChange={(e) => setEmail(e.target.value)}
-                       placeholder="Enter email here"/><br/>
-                <input type="password"
-                       value={password}
-                       onChange={(e) => setPassword(e.target.value)}
-                       placeholder="Enter password here"/><br/>
-                <button onClick={registerHandler}>Register</button>
-                <button onClick={loginHandler}>Login</button>
-                {errorText && (
-                    <p>{errorText}</p>
-                )}
-                {resultText && (
-                    <p>{resultText}</p>
-                )}
-            </header>
-        </div>
-    )
+    else {
+        return <LoginRegisterPage email={email}
+                                  setEmail={setEmail}
+                                  password={password}
+                                  setPassword={setPassword}
+                                  registerHandler={handleRegisterButton}
+                                  loginHandler={handleLoginButton}
+                                  errorText={errorText}
+                                  resultText={resultText} />;
+    }
 }
 
 export default App;

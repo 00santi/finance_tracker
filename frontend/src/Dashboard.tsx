@@ -33,7 +33,7 @@ const Dashboard: React.FC<DashboardProps> = ({username, token, logoutHandler}) =
         } else {
             setError(null);
             setHistory(result.transactions);
-            if (history === []) setSuccess("No transaction history");
+            if (result.transactions.length === 0) setSuccess("No transaction history");
         }
     };
 

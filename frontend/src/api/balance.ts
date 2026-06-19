@@ -40,9 +40,10 @@ export async function balance(token: string): Promise<BalanceResult> {
         return { kind: "ok", balance: data.balance };
     }
     catch (err) {
+        const message = err instanceof Error ? err.message : String(err);
         return {
             kind: "err",
-            message: `Network Error: ${err.message}`
+            message: `Network Error: ${message}`
         };
     }
 }
