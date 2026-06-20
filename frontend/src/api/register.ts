@@ -37,9 +37,10 @@ export async function register(email: string, password: string): Promise<Registe
             message: `Registered successfully`
         };
     } catch (err) {
+        const message = err instanceof Error ? err.message : String(err);
         return {
             kind: "err",
-            message: `Network Error: ${err.message}`
+            message: `Network Error: ${message}`
         };
     }
 }

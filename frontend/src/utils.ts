@@ -1,4 +1,4 @@
-export function validateEmailAndPassword(email: string, password: string, setError): boolean {
+export function validateEmailAndPassword(email: string, password: string, setError: (s: string) => void): boolean {
     setError('');
     const regex = /\S+@\S+\.\S+/;
     if (password.length < 6 || password.length > 255) {

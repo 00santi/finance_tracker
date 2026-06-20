@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import {useState} from 'react';
 import { register } from './api/register.ts';
 import { login } from './api/login.ts';
 import { validateEmailAndPassword } from "./utils.ts";

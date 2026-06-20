@@ -48,9 +48,10 @@ export async function postTransactions(token: string, amount: number, category: 
         return { kind: "ok" };
     }
     catch (err) {
+        const message = err instanceof Error ? err.message : String(err);
         return {
             kind: "err",
-            message: `Network Error: ${err.message}`
+            message: `Network Error: ${message}`
         };
     }
 }
@@ -108,9 +109,10 @@ export async function getTransactions(token: string): Promise<GetResult> {
         return { kind: "ok", transactions: data };
     }
     catch (err) {
+        const message = err instanceof Error ? err.message : String(err);
         return {
             kind: "err",
-            message: `Network Error: ${err.message}`
+            message: `Network Error: ${message}`
         };
     }
 }
