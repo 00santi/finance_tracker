@@ -29,7 +29,7 @@ async fn main() -> Result<(), DynError> {
     let host = std::env::var("HOST").unwrap_or("127.0.0.1".to_string());
     let port = std::env::var("PORT").unwrap_or("7878".to_string()).parse()?;
     let app_data = web::Data::new(AppState { pool, jwt_secret });
-    let frontend_origin = "http://localhost:5173";
+    let frontend_origin = std::env::var("FRONTEND_ORIGIN").unwrap_or("http://localhost:5173".to_string());
 
     HttpServer::new(move ||
         App::new()
@@ -47,7 +47,7 @@ async fn main() -> Result<(), DynError> {
                     .index_file("index.html")
             )
             .wrap(Cors::default()
-                .allowed_origin(frontend_origin)
+                .allowed_origin(&frontend_origin)
                 .allow_any_header()
                 .allow_any_method()
             ))

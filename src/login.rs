@@ -27,6 +27,7 @@ const EXPIRATION_TIME: i64 = 604800;
 #[post("/login")]
 pub async fn post(state: web::Data<AppState>, req: web::Json<LoginRequest>) -> impl Responder {
     let error401 = HttpResponse::Unauthorized().body("Email doesn't exist, or password is incorrect");
+    let error500 = HttpResponse::InternalServerError().body("Internal Server Error");
 
     let query_result = sqlx::query!(
         "SELECT id, email, password_hash FROM users WHERE email = $1",
@@ -41,7 +42,7 @@ pub async fn post(state: web::Data<AppState>, req: web::Json<LoginRequest>) -> i
     let given = req.password.as_bytes();
     let saved = match PasswordHash::new(row.password_hash.as_str()) {
         Ok(x) => x,
-        Err(_) => return error401
+        Err(_) => return error500,
     };
 
     if Argon2::default().verify_password(given, &saved).is_err() {
@@ -59,7 +60,7 @@ pub async fn post(state: web::Data<AppState>, req: web::Json<LoginRequest>) -> i
         &EncodingKey::from_secret(state.jwt_secret.as_bytes()),
     ) {
         Ok(t) => t,
-        _ => return error401
+        _ => return error500,
     };
 
     let response = LoginResponse {

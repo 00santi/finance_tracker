@@ -26,7 +26,7 @@ export async function balance(token: string): Promise<BalanceResult> {
     };
 
     try {
-        const response = await fetch("http://localhost:7878/balance", request);
+        const response = await fetch("/balance", request);
 
         if (!response.ok) {
             const errText = await response.text();

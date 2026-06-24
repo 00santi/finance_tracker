@@ -12,7 +12,7 @@ type LoginResult = Ok | Err;
 
 export async function login(email: string, password: string): Promise<LoginResult> {
     try {
-        const response = await fetch("http://localhost:7878/login", {
+        const response = await fetch("/login", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

@@ -13,7 +13,7 @@ pub async fn get(state: web::Data<AppState>, http_request: HttpRequest) -> impl 
     };
 
     let balance: BigDecimal = match
-    sqlx::query_scalar!("SELECT COALESCE(SUM(amount), 0) FROM transactions WHERE user_id = $1;", claims.sub)
+    sqlx::query_scalar!("SELECT COALESCE(ROUND(SUM(amount), 2), 0) FROM transactions WHERE user_id = $1;", claims.sub)
         .fetch_one(&state.pool).await {
         Ok(d) => d.unwrap_or_default(),
         _ => return HttpResponse::InternalServerError().body("Error fetching transactions"),

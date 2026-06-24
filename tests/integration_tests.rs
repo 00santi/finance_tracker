@@ -1,4 +1,4 @@
-const USERS: &str = "http://127.0.0.1:7878/users";
+const USERS: &str = "http://127.0.0.1:7878/register";
 const LOGIN: &str = "http://127.0.0.1:7878/login";
 const TRANSACTIONS: &str = "http://127.0.0.1:7878/transactions";
 const BALANCE: &str = "http://127.0.0.1:7878/balance";

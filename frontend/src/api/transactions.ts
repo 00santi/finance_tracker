@@ -35,7 +35,7 @@ export async function postTransactions(token: string, amount: number, category: 
     };
 
     try {
-        const response = await fetch("http://localhost:7878/transactions", request);
+        const response = await fetch("/transactions", request);
 
         if (!response.ok) {
             const errText = await response.text();
@@ -95,7 +95,7 @@ export async function getTransactions(token: string): Promise<GetResult> {
     };
 
     try {
-        const response = await fetch("http://localhost:7878/transactions", request);
+        const response = await fetch("/transactions", request);
 
         if (!response.ok) {
             const errText = await response.text();

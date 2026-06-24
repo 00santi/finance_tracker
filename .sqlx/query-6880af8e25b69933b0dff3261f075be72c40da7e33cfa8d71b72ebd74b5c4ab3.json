@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "SELECT COALESCE(SUM(amount), 0) FROM transactions WHERE user_id = $1;",
+  "query": "SELECT COALESCE(ROUND(SUM(amount), 2), 0) FROM transactions WHERE user_id = $1;",
   "describe": {
     "columns": [
       {
@@ -18,5 +18,5 @@
       null
     ]
   },
-  "hash": "39884c4e07ddff657af73a5a6dc9885b505c5727be157f4863dc6ef6e1dfc697"
+  "hash": "6880af8e25b69933b0dff3261f075be72c40da7e33cfa8d71b72ebd74b5c4ab3"
 }
