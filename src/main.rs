@@ -42,7 +42,6 @@ async fn main() -> Result<(), DynError> {
             .service(transactions::post)
             .service(transactions::get)
             .service(balance::get)
-            .service(clear_db)
             .service(
                 Files::new("/", "./frontend/dist/")
                     .index_file("index.html")
@@ -80,7 +79,7 @@ async fn echo(req_body: String) -> impl Responder {
     HttpResponse::Ok().body(req_body)
 }
 
-/*#[get("/clear_db")]
+#[get("/clear_db")]
 async fn clear_db(state: web::Data<AppState>) -> impl Responder {
     let q = sqlx::query("TRUNCATE TABLE transactions, users RESTART IDENTITY CASCADE")
         .execute(&state.pool)
@@ -91,7 +90,7 @@ async fn clear_db(state: web::Data<AppState>) -> impl Responder {
     } else {
         HttpResponse::Ok().body("db cleared")
     }
-}*/
+}
 
 fn valid_email(email: &str) -> bool {
     (6..=255).contains(&email.len())
