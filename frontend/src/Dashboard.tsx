@@ -71,11 +71,11 @@ const Dashboard: React.FC<DashboardProps> = ({username, token, logoutHandler}) =
             <p>User: {username}</p>
             <p>Balance: {currentBalance}</p>
             {error && <p style={{color: 'red'}}>{error}</p>}
+            {success && <p style={{color: 'green'}}>{success}</p>}
             <input type="number"
                    value={transaction}
                    onChange={(e) => setTransaction(e.target.value)}
                    placeholder="Enter transaction amount here"/><br/>
-            {success && <p style={{color: 'green'}}>{success}</p>}
             <select value={category}
                     onChange={(e) => setCategory(e.target.value)}>
                 <option value="PERSONAL">PERSONAL</option>

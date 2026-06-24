@@ -15,7 +15,7 @@ const LoginRegisterPage: React.FC<LoginRegisterProps> = ({email, setEmail, passw
     return (
         <div className="App">
             <header className="App-header">
-                <h1>Finance Tracker Frontend</h1>
+                <h1>Finance Tracker</h1>
                 <hr style={{margin: '20px 0'}}/>
                 <input type="email"
                        value={email}
