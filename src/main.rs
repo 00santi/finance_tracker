@@ -8,7 +8,9 @@ use actix_web::{
     web
 };
 use actix_cors::Cors;
+use actix_files::Files;
 use sqlx::PgPool;
+use dotenvy::dotenv;
 
 mod db;
 mod register;
@@ -21,8 +23,9 @@ type DynError = Box<dyn std::error::Error + Send + Sync>;
 
 #[actix_web::main]
 async fn main() -> Result<(), DynError> {
+    dotenv().ok();
     let pool = db::init_db_pool().await?;
-    let jwt_secret = std::env::var("JWT_SECRET")?;
+    let jwt_secret = std::env::var("JWT_SECRET").expect("JWT_SECRET not found");
     let host = std::env::var("HOST").unwrap_or("127.0.0.1".to_string());
     let port = std::env::var("PORT").unwrap_or("7878".to_string()).parse()?;
     let app_data = web::Data::new(AppState { pool, jwt_secret });
@@ -31,7 +34,7 @@ async fn main() -> Result<(), DynError> {
     HttpServer::new(move ||
         App::new()
             .app_data(app_data.clone())
-            .service(homepage)
+            .service(old_homepage)
             .service(health)
             .service(echo)
             .service(register::post)
@@ -40,6 +43,10 @@ async fn main() -> Result<(), DynError> {
             .service(transactions::get)
             .service(balance::get)
             .service(clear_db)
+            .service(
+                Files::new("/", "./frontend/dist/")
+                    .index_file("index.html")
+            )
             .wrap(Cors::default()
                 .allowed_origin(frontend_origin)
                 .allow_any_header()
@@ -62,8 +69,8 @@ async fn health() -> impl Responder {
     HttpResponse::Ok().body("Hello world!")
 }
 
-#[get("/")]
-async fn homepage() -> impl Responder {
+#[get("/old_homepage")]
+async fn old_homepage() -> impl Responder {
     HttpResponse::Ok()
         .body("Finance Tracker :D check the GitHub README for usage https://github.com/00santi/finance_tracker\nFrontend is a work in progress")
 }
@@ -73,7 +80,7 @@ async fn echo(req_body: String) -> impl Responder {
     HttpResponse::Ok().body(req_body)
 }
 
-#[get("/clear_db")]
+/*#[get("/clear_db")]
 async fn clear_db(state: web::Data<AppState>) -> impl Responder {
     let q = sqlx::query("TRUNCATE TABLE transactions, users RESTART IDENTITY CASCADE")
         .execute(&state.pool)
@@ -84,7 +91,7 @@ async fn clear_db(state: web::Data<AppState>) -> impl Responder {
     } else {
         HttpResponse::Ok().body("db cleared")
     }
-}
+}*/
 
 fn valid_email(email: &str) -> bool {
     (6..=255).contains(&email.len())
