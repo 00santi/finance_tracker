@@ -79,7 +79,16 @@ async fn clear_db(state: web::Data<AppState>) -> impl Responder {
 }
 
 fn valid_email(email: &str) -> bool {
-    (6..=255).contains(&email.len())
+    if !(6..=255).contains(&email.len()) {
+        return false;
+    }
+    let at = match email.find('@') {
+        Some(i) => i,
+        None => return false,
+    };
+    let local = &email[..at];
+    let domain = &email[at + 1..];
+    !local.is_empty() && domain.contains('.') && !domain.ends_with('.')
 }
 
 fn valid_pwd(pwd: &str) -> bool {
