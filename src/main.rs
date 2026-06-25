@@ -4,7 +4,6 @@ use actix_web::{
     HttpServer,
     Responder,
     get,
-    post,
     web
 };
 use actix_cors::Cors;
@@ -34,9 +33,7 @@ async fn main() -> Result<(), DynError> {
     HttpServer::new(move ||
         App::new()
             .app_data(app_data.clone())
-            .service(old_homepage)
             .service(health)
-            .service(echo)
             .service(register::post)
             .service(login::post)
             .service(transactions::post)
@@ -65,18 +62,7 @@ pub struct AppState {
 
 #[get("/health")]
 async fn health() -> impl Responder {
-    HttpResponse::Ok().body("Hello world!")
-}
-
-#[get("/old_homepage")]
-async fn old_homepage() -> impl Responder {
-    HttpResponse::Ok()
-        .body("Finance Tracker :D check the GitHub README for usage https://github.com/00santi/finance_tracker\nFrontend is a work in progress")
-}
-
-#[post("/echo")]
-async fn echo(req_body: String) -> impl Responder {
-    HttpResponse::Ok().body(req_body)
+    HttpResponse::Ok().body("Finance Tracker running!")
 }
 
 #[get("/clear_db")]
